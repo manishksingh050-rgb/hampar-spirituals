@@ -1,0 +1,159 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(42, 42, 30, 0.4);
+  z-index: 200;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  max-width: 100vw;
+  background: var(--cream);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  color: var(--text);
+}
+
+.header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.empty p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+
+.emptyNote {
+  font-size: 0.82rem !important;
+  font-family: 'DM Sans', sans-serif !important;
+  margin-top: 0.5rem;
+  color: var(--text-light) !important;
+}
+
+.items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.itemName {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.itemMeta {
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+.itemRight {
+  text-align: right;
+}
+
+.itemTotal {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  font-size: 0.72rem;
+  color: var(--text-light);
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--cream-mid);
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.totalAmount {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--green);
+}
+
+.checkoutBtn {
+  width: 100%;
+  background: var(--green);
+  color: var(--cream);
+  font-size: 0.78rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 13px;
+  border: none;
+  border-radius: 2px;
+  margin-bottom: 0.75rem;
+  transition: background 0.2s;
+}
+
+.checkoutBtn:hover {
+  background: var(--green-dark);
+}
+
+.shippingNote {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--green-light);
+}

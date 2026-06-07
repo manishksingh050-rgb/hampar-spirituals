@@ -1,0 +1,140 @@
+.card {
+  background: var(--cream-mid);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(74, 112, 85, 0.12);
+}
+
+.hero {
+  background: var(--cream-mid);
+}
+
+.imgWrap {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero .imgWrap {
+  height: 260px;
+}
+
+.badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  background: var(--green);
+  color: var(--cream);
+  border-radius: 2px;
+}
+
+.body {
+  padding: 1.25rem;
+}
+
+.hero .body {
+  padding: 1.5rem;
+}
+
+.cat {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--green-light);
+  margin-bottom: 6px;
+}
+
+.name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.hero .name {
+  font-size: 1.7rem;
+}
+
+.desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+.meta {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.metaItem {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.metaItem span {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green-light);
+  margin-bottom: 2px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.originalPrice {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  text-decoration: line-through;
+}
+
+.price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--green);
+}
+
+.addBtn {
+  background: var(--green);
+  color: var(--cream);
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.addBtn:hover {
+  background: var(--green-dark);
+}
+
+.addBtn.added {
+  background: var(--gold);
+  color: var(--text);
+}

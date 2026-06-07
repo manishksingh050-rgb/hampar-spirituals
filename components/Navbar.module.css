@@ -1,0 +1,105 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 2rem;
+  background: #f4f1eb;
+  border-bottom: 1px solid #ddd8cc;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-direction: row;
+}
+.logoWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.logoText {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #4a7055;
+  line-height: 1;
+}
+.logoSub {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #7a9a80;
+  margin-top: 2px;
+}
+.navLinks {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  list-style: none;
+}
+.navLinks a {
+  font-size: 0.78rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #6a6a52;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.navLinks a:hover { color: #4a7055; }
+.navRight {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+.iconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6a6a52;
+  display: flex;
+  align-items: center;
+}
+.cartBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #4a7055;
+  color: #f4f1eb;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.cartBtn:hover { background: #3a5a42; }
+.badge {
+  background: #c9a84c;
+  color: #2a2a1e;
+  font-size: 9px;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.menuToggle { display: none; background: none; border: none; }
+@media (max-width: 768px) {
+  .navLinks { display: none; }
+  .navLinks.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0; right: 0;
+    background: #f4f1eb;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #ddd8cc;
+  }
+  .menuToggle { display: flex; }
+}
