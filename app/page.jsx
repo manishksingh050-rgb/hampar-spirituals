@@ -5,13 +5,11 @@ import { useProducts } from '../components/useProducts'
 export default function Home() {
   const { products, loading, source } = useProducts()
   const [cart, setCart] = useState([])
-  const [cartOpen, setCartOpen] = useState(false)
   const [toast, setToast] = useState({ visible:false, message:'' })
   const [filter, setFilter] = useState('all')
   const [added, setAdded] = useState({})
 
   const cartCount = cart.reduce((s,i) => s+i.qty, 0)
-  const cartTotal = cart.reduce((s,i) => s+i.price*i.qty, 0)
 
   const addToCart = (product) => {
     setCart(prev => {
@@ -55,8 +53,8 @@ export default function Home() {
     h2: { fontFamily:"'Cormorant Garamond',serif", fontSize:'2rem', fontWeight:400, color:'#2a2a1e', margin:0 },
     heroGrid: { display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem', maxWidth:880, margin:'0 auto' },
     heroCard: { background:'#edeae0', border:'1px solid #ddd8cc', borderRadius:4, overflow:'hidden' },
-    cardImg: { display:'flex', alignItems:'center', justifyContent:'center', position:'relative', borderBottom:'1px solid #ddd8cc', height:240 },
-    cardBadge: { position:'absolute', top:12, left:12, fontSize:8, letterSpacing:'2px', textTransform:'uppercase', padding:'4px 10px', background:'#4a7055', color:'#f4f1eb', borderRadius:2 },
+    cardImg: { display:'flex', alignItems:'center', justifyContent:'center', position:'relative', borderBottom:'1px solid #ddd8cc', height:240, overflow:'hidden' },
+    cardBadge: { position:'absolute', top:12, left:12, fontSize:8, letterSpacing:'2px', textTransform:'uppercase', padding:'4px 10px', background:'#4a7055', color:'#f4f1eb', borderRadius:2, zIndex:1 },
     cardBody: { padding:'1.5rem' },
     cardCat: { fontSize:9, letterSpacing:'2.5px', textTransform:'uppercase', color:'#7a9a80', marginBottom:6 },
     cardName: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1.7rem', fontWeight:400, color:'#2a2a1e', marginBottom:6 },
@@ -69,7 +67,7 @@ export default function Home() {
     filterBtn: (active) => ({ fontSize:'0.75rem', letterSpacing:'1px', textTransform:'uppercase', padding:'7px 20px', border:'1px solid', borderColor:active?'#4a7055':'#ddd8cc', background:active?'#4a7055':'transparent', color:active?'#f4f1eb':'#6a6a52', borderRadius:2, cursor:'pointer' }),
     prodGrid: { display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:'1rem', maxWidth:960, margin:'0 auto' },
     smallCard: { background:'#f4f1eb', border:'1px solid #ddd8cc', borderRadius:4, overflow:'hidden' },
-    smallImg: { height:160, display:'flex', alignItems:'center', justifyContent:'center', borderBottom:'1px solid #ddd8cc', position:'relative' },
+    smallImg: { height:160, display:'flex', alignItems:'center', justifyContent:'center', borderBottom:'1px solid #ddd8cc', position:'relative', overflow:'hidden' },
     smallBody: { padding:'1rem' },
     smallName: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1.05rem', color:'#2a2a1e', marginBottom:4 },
     smallDesc: { fontSize:'0.75rem', color:'#6a6a52', lineHeight:1.7, marginBottom:10 },
@@ -87,7 +85,7 @@ export default function Home() {
     processBand: { padding:'3rem 2rem', background:'#4a7055', textAlign:'center' },
     processH2: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1.8rem', fontWeight:400, color:'#f4f1eb', marginBottom:'2rem' },
     stepsRow: { display:'grid', gridTemplateColumns:'repeat(5,1fr)' },
-    step: { padding:'1.25rem 0.75rem', borderRight:'1px solid rgba(255,255,255,0.12)' },
+    step: { padding:'1.25rem 0.75rem' },
     stepNum: { width:32, height:32, borderRadius:'50%', border:'1px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 0.75rem', fontFamily:"'Cormorant Garamond',serif", fontSize:'1rem', color:'#c8dbc8' },
     stepH3: { fontFamily:"'Cormorant Garamond',serif", fontSize:'0.95rem', fontWeight:500, color:'#f4f1eb', marginBottom:5 },
     stepP: { fontSize:'0.75rem', color:'#a8c89a', lineHeight:1.65 },
@@ -110,52 +108,56 @@ export default function Home() {
     footerLink: { fontSize:'0.72rem', letterSpacing:'1px', textTransform:'uppercase', color:'#4a4a32', textDecoration:'none' },
     footerCopy: { fontSize:'0.72rem', color:'#3a3a24' },
     toast: (v) => ({ position:'fixed', bottom:24, right:24, background:'#2a2a1e', color:'#f4f1eb', padding:'12px 18px', borderRadius:4, fontSize:'0.82rem', display:'flex', alignItems:'center', gap:8, borderLeft:'3px solid #4a7055', opacity:v?1:0, transform:v?'translateY(0)':'translateY(8px)', transition:'all 0.3s', zIndex:300, pointerEvents:'none' }),
-    sheetBadge: { position:'fixed', bottom:24, left:24, background:'#edeae0', border:'1px solid #ddd8cc', padding:'6px 12px', borderRadius:20, fontSize:'0.7rem', color:'#7a9a80', zIndex:200 },
     skeleton: { background:'linear-gradient(90deg,#edeae0 25%,#e8e4d8 50%,#edeae0 75%)', backgroundSize:'200% 100%', animation:'shimmer 1.5s infinite', borderRadius:4 },
   }
 
-  const Logo = () => (
-    <svg width="36" height="36" viewBox="0 0 80 80" fill="none">
-      <rect x="18" y="38" width="44" height="28" rx="4" stroke="#2a2a1e" strokeWidth="2.5" fill="none"/>
-      <path d="M26 38 Q28 24 40 22 Q52 24 54 38" stroke="#2a2a1e" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-      <rect x="30" y="16" width="8" height="22" rx="4" stroke="#2a2a1e" strokeWidth="2" fill="none"/>
-      <rect x="42" y="16" width="8" height="22" rx="4" stroke="#2a2a1e" strokeWidth="2" fill="none"/>
-      <circle cx="32" cy="38" r="2.5" fill="#2a2a1e"/>
-      <circle cx="48" cy="38" r="2.5" fill="#2a2a1e"/>
-      <path d="M40 62 Q36 54 38 48 Q40 44 40 44 Q40 44 42 48 Q44 54 40 62Z" fill="#4a7055" opacity="0.8"/>
-    </svg>
-  )
-
-  const ProductSVG = ({ type }) => type === 'agarbatti' ? (
-    <svg width="100" height="140" viewBox="0 0 120 168" style={{opacity:0.9}}>
-      <line x1="58" y1="15" x2="58" y2="125" stroke="#5c4a2a" strokeWidth="1.5" strokeDasharray="3,5" opacity="0.45"/>
-      <line x1="62" y1="15" x2="62" y2="125" stroke="#5c4a2a" strokeWidth="1.5" strokeDasharray="3,5" opacity="0.45"/>
-      <circle cx="60" cy="13" r="5" fill="#c9a84c" opacity="0.9"/>
-      <path d="M60 18 Q44 34 37 54 Q30 72 40 82 Q50 90 60 76" fill="none" stroke="#4a7055" strokeWidth="1.4" opacity="0.7"/>
-      <ellipse cx="35" cy="58" rx="13" ry="8" fill="#6a9a6a" opacity="0.6" transform="rotate(-25 35 58)"/>
-      <path d="M60 18 Q76 34 83 54 Q90 72 80 82 Q70 90 60 76" fill="none" stroke="#4a7055" strokeWidth="1.4" opacity="0.7"/>
-      <ellipse cx="85" cy="58" rx="13" ry="8" fill="#6a9a6a" opacity="0.6" transform="rotate(25 85 58)"/>
-      <ellipse cx="44" cy="84" rx="9" ry="13" fill="#c4889a" opacity="0.65" transform="rotate(-10 44 84)"/>
-      <ellipse cx="60" cy="80" rx="8" ry="12" fill="#b87888" opacity="0.5"/>
-      <ellipse cx="76" cy="84" rx="9" ry="13" fill="#c4889a" opacity="0.65" transform="rotate(10 76 84)"/>
-    </svg>
-  ) : (
-    <svg width="100" height="140" viewBox="0 0 120 168">
-      <polygon points="60,10 110,38 110,100 60,128 10,100 10,38" fill="#7a9a80" opacity="0.2" stroke="#4a7055" strokeWidth="1.5"/>
-      <polygon points="60,24 96,44 96,90 60,110 24,90 24,44" fill="#4a7055" opacity="0.1"/>
-      <text x="60" y="72" textAnchor="middle" fontFamily="'Cormorant Garamond',serif" fontSize="10" fill="#2a2a1e" letterSpacing="2" opacity="0.8">HAMPAR</text>
-      <text x="60" y="86" textAnchor="middle" fontFamily="'DM Sans',sans-serif" fontSize="7" fill="#4a7055" letterSpacing="1.5" opacity="0.9">DHUPBATTI</text>
-      <path d="M36 60 Q40 44 52 52 Q46 36 60 28 Q74 36 68 52 Q80 44 84 60 Q68 70 60 66 Q52 70 36 60Z" fill="#a8c89a" opacity="0.4"/>
-    </svg>
-  )
+  const ProductImage = ({ product, height }) => {
+    if (product.image) {
+      return <img src={product.image} alt={product.name} style={{width:'100%', height:height||'100%', objectFit:'cover'}}/>
+    }
+    if (product.type === 'agarbatti') {
+      return (
+        <svg width="100" height="140" viewBox="0 0 120 168" style={{opacity:0.9}}>
+          <line x1="58" y1="15" x2="58" y2="125" stroke="#5c4a2a" strokeWidth="1.5" strokeDasharray="3,5" opacity="0.45"/>
+          <line x1="62" y1="15" x2="62" y2="125" stroke="#5c4a2a" strokeWidth="1.5" strokeDasharray="3,5" opacity="0.45"/>
+          <circle cx="60" cy="13" r="5" fill="#c9a84c" opacity="0.9"/>
+          <path d="M60 18 Q44 34 37 54 Q30 72 40 82 Q50 90 60 76" fill="none" stroke="#4a7055" strokeWidth="1.4" opacity="0.7"/>
+          <ellipse cx="35" cy="58" rx="13" ry="8" fill="#6a9a6a" opacity="0.6" transform="rotate(-25 35 58)"/>
+          <path d="M60 18 Q76 34 83 54 Q90 72 80 82 Q70 90 60 76" fill="none" stroke="#4a7055" strokeWidth="1.4" opacity="0.7"/>
+          <ellipse cx="85" cy="58" rx="13" ry="8" fill="#6a9a6a" opacity="0.6" transform="rotate(25 85 58)"/>
+          <ellipse cx="44" cy="84" rx="9" ry="13" fill="#c4889a" opacity="0.65" transform="rotate(-10 44 84)"/>
+          <ellipse cx="60" cy="80" rx="8" ry="12" fill="#b87888" opacity="0.5"/>
+          <ellipse cx="76" cy="84" rx="9" ry="13" fill="#c4889a" opacity="0.65" transform="rotate(10 76 84)"/>
+        </svg>
+      )
+    }
+    return (
+      <svg width="100" height="140" viewBox="0 0 120 168">
+        <polygon points="60,10 110,38 110,100 60,128 10,100 10,38" fill="#7a9a80" opacity="0.2" stroke="#4a7055" strokeWidth="1.5"/>
+        <polygon points="60,24 96,44 96,90 60,110 24,90 24,44" fill="#4a7055" opacity="0.1"/>
+        <text x="60" y="72" textAnchor="middle" fontFamily="'Cormorant Garamond',serif" fontSize="10" fill="#2a2a1e" letterSpacing="2" opacity="0.8">HAMPAR</text>
+        <text x="60" y="86" textAnchor="middle" fontFamily="'DM Sans',sans-serif" fontSize="7" fill="#4a7055" letterSpacing="1.5" opacity="0.9">DHUPBATTI</text>
+      </svg>
+    )
+  }
 
   return (
     <div style={s.page}>
       <style>{`@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
 
-      {/* NAV */}
       <nav style={s.nav}>
-        <div style={s.logoWrap}><Logo/><div><div style={s.logoText}>HAMPAR</div><div style={s.logoSub}>Spirituals</div></div></div>
+        <div style={s.logoWrap}>
+          <svg width="36" height="36" viewBox="0 0 80 80" fill="none">
+            <rect x="18" y="38" width="44" height="28" rx="4" stroke="#2a2a1e" strokeWidth="2.5" fill="none"/>
+            <path d="M26 38 Q28 24 40 22 Q52 24 54 38" stroke="#2a2a1e" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+            <rect x="30" y="16" width="8" height="22" rx="4" stroke="#2a2a1e" strokeWidth="2" fill="none"/>
+            <rect x="42" y="16" width="8" height="22" rx="4" stroke="#2a2a1e" strokeWidth="2" fill="none"/>
+            <circle cx="32" cy="38" r="2.5" fill="#2a2a1e"/>
+            <circle cx="48" cy="38" r="2.5" fill="#2a2a1e"/>
+            <path d="M40 62 Q36 54 38 48 Q40 44 40 44 Q40 44 42 48 Q44 54 40 62Z" fill="#4a7055" opacity="0.8"/>
+          </svg>
+          <div><div style={s.logoText}>HAMPAR</div><div style={s.logoSub}>Spirituals</div></div>
+        </div>
         <ul style={s.navLinks}>
           <li><a href="#shop" style={s.navLink}>Shop</a></li>
           <li><a href="/story" style={s.navLink}>Our Story</a></li>
@@ -167,7 +169,6 @@ export default function Home() {
         </button>
       </nav>
 
-      {/* HERO */}
       <section style={s.hero}>
         <div style={s.heroLeft}>
           <div style={s.eyebrow}><span style={{width:24,height:1,background:'#7a9a80',display:'inline-block'}}></span>Temple-grade · Jhansi, India</div>
@@ -210,12 +211,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TRUST */}
       <div style={s.trustStrip}>
         {['🌿 100% Natural','🚫 Charcoal-Free','📱 QR Verified','📍 Jhansi Crafted','🚚 Free Ship ₹299+'].map(t=><div key={t} style={s.trustItem}>{t}</div>)}
       </div>
 
-      {/* HERO PRODUCTS */}
       <section style={s.section} id="shop">
         <div style={s.sectionHead}>
           <div style={s.eyebrowGreen}>Signature Products</div>
@@ -233,7 +232,7 @@ export default function Home() {
               <div key={p.id} style={s.heroCard}>
                 <div style={{...s.cardImg,background:p.bg}}>
                   {p.badge && <span style={s.cardBadge}>{p.badge}</span>}
-                  <ProductSVG type={p.type}/>
+                  <ProductImage product={p}/>
                 </div>
                 <div style={s.cardBody}>
                   <div style={s.cardCat}>{p.category}</div>
@@ -253,7 +252,6 @@ export default function Home() {
         )}
       </section>
 
-      {/* MORE PRODUCTS */}
       <section style={s.section2}>
         <div style={s.sectionHead}>
           <div style={s.eyebrowGreen}>Full Collection</div>
@@ -265,16 +263,14 @@ export default function Home() {
           ))}
         </div>
         {loading ? (
-          <div style={{...s.prodGrid}}>
-            {[1,2,3,4].map(i=><div key={i} style={{...s.skeleton,height:280}}/>)}
-          </div>
+          <div style={s.prodGrid}>{[1,2,3,4].map(i=><div key={i} style={{...s.skeleton,height:280}}/>)}</div>
         ) : (
           <div style={s.prodGrid}>
             {moreProds.map(p=>(
               <div key={p.id} style={s.smallCard}>
                 <div style={{...s.smallImg,background:p.bg}}>
                   {p.badge && <span style={{...s.cardBadge,fontSize:7}}>{p.badge}</span>}
-                  <ProductSVG type={p.type}/>
+                  <ProductImage product={p}/>
                 </div>
                 <div style={s.smallBody}>
                   <div style={s.cardCat}>{p.category}</div>
@@ -291,13 +287,12 @@ export default function Home() {
         )}
       </section>
 
-      {/* STORY */}
       <section style={s.storyBand}>
         <div style={s.storyText}>
           <div style={{...s.eyebrowGreen,marginBottom:'0.8rem'}}>Our Promise</div>
           <h2 style={s.storyH2}>Crafted with reverence,<br/>verified with trust</h2>
           <p style={s.storyP}>In the heart of Jhansi, every HAMPAR stick is hand-rolled using lavender, sandalwood, and pure botanical resins — never charcoal, never synthetic fragrance.</p>
-          <p style={s.storyP}>Our triangular prism and hexagonal packs protect fragrance integrity, and every box carries a QR code linking to your batch's purity certificate.</p>
+          <p style={s.storyP}>Our triangular prism and hexagonal packs protect fragrance integrity, and every box carries a QR code linking to your batch purity certificate.</p>
           <div style={s.statsRow}>
             {[['100%','Natural'],['45m','Burn time'],['₹40','Accessible']].map(([n,l])=>(
               <div key={l}><div style={s.statNum}>{n}</div><div style={s.statLbl}>{l}</div></div>
@@ -317,7 +312,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PROCESS */}
       <section style={s.processBand}>
         <div style={{fontSize:9,letterSpacing:'3px',textTransform:'uppercase',color:'#a8c89a',marginBottom:'0.6rem'}}>Craft Process</div>
         <h2 style={s.processH2}>From botanical to sacred smoke</h2>
@@ -332,7 +326,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* REVIEWS */}
       <section style={s.reviews}>
         <div style={s.sectionHead}>
           <div style={s.eyebrowGreen}>Reviews</div>
@@ -353,7 +346,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* NEWSLETTER */}
       <section style={s.newsletter}>
         <h2 style={s.nlH2}>Join the sacred circle</h2>
         <p style={s.nlP}>New fragrances, batch drops & early access — straight to your inbox.</p>
@@ -363,7 +355,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer style={s.footer}>
         <div>
           <div style={s.footerLogo}>HAMPAR SPIRITUALS</div>
@@ -377,11 +368,7 @@ export default function Home() {
         <div style={s.footerCopy}>© 2024 Hampar Spirituals</div>
       </footer>
 
-      {/* TOAST */}
       <div style={s.toast(toast.visible)}>✓ {toast.message}</div>
-
-      {/* SHEET SOURCE BADGE */}
-      {source && <div style={s.sheetBadge}>{source==='sheets'?'📊 Live from Sheets':'⚡ Cached data'}</div>}
     </div>
   )
 }
