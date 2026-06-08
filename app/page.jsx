@@ -1,21 +1,26 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useProducts } from '../components/useProducts'
+import { cartStore } from '../components/cartStore'
 
 export default function Home() {
   const { products, loading, source } = useProducts()
-  const [cart, setCart] = useState([])
+  const [cartCount, setCartCount] = useState(0)
   const [toast, setToast] = useState({ visible:false, message:'' })
   const [filter, setFilter] = useState('all')
   const [added, setAdded] = useState({})
 
-  const cartCount = cart.reduce((s,i) => s+i.qty, 0)
+  // Sync cart count from localStorage
+  useEffect(() => {
+    setCartCount(cartStore.count())
+    const onUpdate = () => setCartCount(cartStore.count())
+    window.addEventListener('cartUpdated', onUpdate)
+    return () => window.removeEventListener('cartUpdated', onUpdate)
+  }, [])
 
   const addToCart = (product) => {
-    setCart(prev => {
-      const ex = prev.find(i => i.id===product.id)
-      return ex ? prev.map(i => i.id===product.id ? {...i,qty:i.qty+1} : i) : [...prev,{...product,qty:1}]
-    })
+    cartStore.add(product)
+    setCartCount(cartStore.count())
     setAdded(a => ({...a,[product.id]:true}))
     setTimeout(() => setAdded(a => ({...a,[product.id]:false})), 1800)
     setToast({visible:true, message:`${product.name} added!`})

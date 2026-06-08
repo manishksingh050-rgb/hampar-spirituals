@@ -1,11 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-
-const SAMPLE_CART = [
-  { id:1, name:'Lavender Serenity', category:'Agarbatti · Floral', price:40, qty:2, bg:'#ede8d8', type:'agarbatti', meta:'30 sticks · Triangular prism' },
-  { id:2, name:'Sandalwood Sacred', category:'Dhupbatti · Woody', price:55, qty:1, bg:'#e4edd8', type:'dhupbatti', meta:'20 cones · Hexagonal box' },
-]
+import { cartStore } from '../../components/cartStore'
 
 const SUGGESTED = [
   { id:3, name:'Rose Divya', category:'Agarbatti · Floral', price:40, bg:'#f0dcd8', type:'agarbatti' },
@@ -14,14 +10,29 @@ const SUGGESTED = [
 ]
 
 export default function CartPage() {
-  const [cart, setCart] = useState(SAMPLE_CART)
+  const [cart, setCart] = useState([])
   const [coupon, setCoupon] = useState('')
   const [couponMsg, setCouponMsg] = useState(null)
   const [discount, setDiscount] = useState(0)
   const [added, setAdded] = useState({})
 
-  const updateQty = (id, delta) => setCart(prev => prev.map(i => i.id===id ? {...i, qty:Math.max(1,i.qty+delta)} : i))
-  const remove = (id) => setCart(prev => prev.filter(i => i.id!==id))
+  useEffect(() => {
+    setCart(cartStore.get())
+    const onUpdate = () => setCart(cartStore.get())
+    window.addEventListener('cartUpdated', onUpdate)
+    return () => window.removeEventListener('cartUpdated', onUpdate)
+  }, [])
+
+  const updateQty = (id, delta) => {
+    cartStore.updateQty(id, delta)
+    setCart(cartStore.get())
+  }
+
+  const remove = (id) => {
+    cartStore.remove(id)
+    setCart(cartStore.get())
+  }
+
   const subtotal = cart.reduce((s,i) => s+i.price*i.qty, 0)
   const shipping = subtotal >= 299 ? 0 : 49
   const total = subtotal - discount + shipping
@@ -33,10 +44,8 @@ export default function CartPage() {
   }
 
   const addSuggested = (p) => {
-    setCart(prev => {
-      const ex = prev.find(i => i.id===p.id)
-      return ex ? prev.map(i => i.id===p.id ? {...i,qty:i.qty+1} : i) : [...prev,{...p,qty:1,meta:p.type==='agarbatti'?'30 sticks':'20 cones'}]
-    })
+    cartStore.add(p)
+    setCart(cartStore.get())
     setAdded(a => ({...a,[p.id]:true}))
     setTimeout(() => setAdded(a => ({...a,[p.id]:false})), 1800)
   }
@@ -61,19 +70,17 @@ export default function CartPage() {
     qtyBtn: { background:'none', border:'none', width:32, height:32, cursor:'pointer', fontSize:'1rem', color:'#4a7055', display:'flex', alignItems:'center', justifyContent:'center' },
     qtyNum: { width:36, textAlign:'center', fontSize:'0.85rem', borderLeft:'1px solid #ddd8cc', borderRight:'1px solid #ddd8cc', height:32, display:'flex', alignItems:'center', justifyContent:'center' },
     itemPrice: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1.1rem', fontWeight:500, color:'#4a7055' },
-    removeBtn: { background:'none', border:'none', cursor:'pointer', color:'#c9a0a0', fontSize:18, display:'flex', alignItems:'center', justifyContent:'center' },
-    emptyCart: { textAlign:'center', padding:'4rem 2rem', background:'#edeae0', borderRadius:4, border:'1px solid #ddd8cc' },
+    removeBtn: { background:'none', border:'none', cursor:'pointer', color:'#c9a0a0', fontSize:18 },
     summary: { background:'#edeae0', border:'1px solid #ddd8cc', borderRadius:4, padding:'1.5rem', position:'sticky', top:80 },
     summaryTitle: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1.3rem', color:'#2a2a1e', marginBottom:'1.25rem', paddingBottom:'1rem', borderBottom:'1px solid #ddd8cc' },
     summaryRow: { display:'flex', justifyContent:'space-between', fontSize:'0.83rem', color:'#6a6a52', marginBottom:'0.6rem' },
     summaryTotal: { display:'flex', justifyContent:'space-between', alignItems:'center', margin:'1rem 0' },
-    totalLabel: { fontSize:'0.85rem', textTransform:'uppercase', letterSpacing:'1px', color:'#2a2a1e' },
     totalAmt: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1.8rem', fontWeight:500, color:'#4a7055' },
     couponRow: { display:'flex', gap:6, marginBottom:'0.5rem' },
     couponInput: { flex:1, padding:'9px 12px', background:'#f4f1eb', border:'1px solid #ddd8cc', borderRadius:2, fontSize:'0.82rem', fontFamily:"'DM Sans',sans-serif", outline:'none', color:'#2a2a1e' },
     couponBtn: { background:'#2a2a1e', color:'#f4f1eb', border:'none', padding:'9px 14px', borderRadius:2, fontSize:'0.75rem', cursor:'pointer' },
     checkoutBtn: { width:'100%', background:'#4a7055', color:'#f4f1eb', fontSize:'0.78rem', letterSpacing:'1.5px', textTransform:'uppercase', padding:13, border:'none', borderRadius:2, cursor:'pointer', marginBottom:'0.75rem', fontFamily:"'DM Sans',sans-serif" },
-    continuLink: { display:'block', textAlign:'center', width:'100%', background:'transparent', color:'#2a2a1e', fontSize:'0.75rem', letterSpacing:'1.5px', textTransform:'uppercase', padding:'11px', border:'1px solid #2a2a1e', borderRadius:2, textDecoration:'none', boxSizing:'border-box' },
+    continueLink: { display:'block', textAlign:'center', width:'100%', background:'transparent', color:'#2a2a1e', fontSize:'0.75rem', letterSpacing:'1.5px', textTransform:'uppercase', padding:'11px', border:'1px solid #2a2a1e', borderRadius:2, textDecoration:'none', boxSizing:'border-box' },
     shipNote: { textAlign:'center', fontSize:'0.75rem', color:'#7a9a80', marginTop:'0.75rem' },
     trust: { display:'flex', justifyContent:'space-around', marginTop:'1.25rem', paddingTop:'1.25rem', borderTop:'1px solid #ddd8cc' },
     trustItem: { textAlign:'center', fontSize:'9px', letterSpacing:'1px', textTransform:'uppercase', color:'#7a9a80' },
@@ -106,10 +113,7 @@ export default function CartPage() {
             <circle cx="48" cy="38" r="2.5" fill="#2a2a1e"/>
             <path d="M40 62 Q36 54 38 48 Q40 44 40 44 Q40 44 42 48 Q44 54 40 62Z" fill="#4a7055" opacity="0.8"/>
           </svg>
-          <div>
-            <div style={s.logoText}>HAMPAR</div>
-            <div style={s.logoSub}>Spirituals</div>
-          </div>
+          <div><div style={s.logoText}>HAMPAR</div><div style={s.logoSub}>Spirituals</div></div>
         </Link>
         <Link href="/" style={{fontSize:'0.78rem',letterSpacing:'1.5px',textTransform:'uppercase',color:'#6a6a52',textDecoration:'none'}}>← Continue Shopping</Link>
       </nav>
@@ -119,7 +123,7 @@ export default function CartPage() {
         <div style={s.pageCount}>{cart.reduce((s,i)=>s+i.qty,0)} items</div>
 
         {cart.length === 0 ? (
-          <div style={s.emptyCart}>
+          <div style={{textAlign:'center',padding:'4rem 2rem',background:'#edeae0',borderRadius:4,border:'1px solid #ddd8cc'}}>
             <div style={{fontSize:48,marginBottom:'1rem'}}>🪔</div>
             <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:'1.5rem',color:'#2a2a1e',marginBottom:'0.75rem'}}>Your cart is empty</h2>
             <p style={{fontSize:'0.85rem',color:'#6a6a52',marginBottom:'1.5rem'}}>Add some sacred fragrance to begin.</p>
@@ -134,20 +138,18 @@ export default function CartPage() {
               {cart.map(item => (
                 <div key={item.id} style={s.cartRow}>
                   <div style={s.itemLeft}>
-                    <div style={{...s.thumb,background:item.bg}}>
+                    <div style={{...s.thumb, background:item.bg||'#ede8d8'}}>
                       <svg width="32" height="44" viewBox="0 0 80 110" opacity="0.8">
                         <line x1="38" y1="5" x2="38" y2="90" stroke="#5c4a2a" strokeWidth="1.5" strokeDasharray="3,5" opacity="0.4"/>
                         <circle cx="38" cy="5" r="4" fill="#c9a84c"/>
-                        <ellipse cx="24" cy="50" rx="10" ry="6" fill="#6a9a6a" opacity="0.6" transform="rotate(-22 24 50)"/>
-                        <ellipse cx="52" cy="50" rx="10" ry="6" fill="#6a9a6a" opacity="0.6" transform="rotate(22 52 50)"/>
-                        <ellipse cx="30" cy="68" rx="7" ry="10" fill="#c4889a" opacity="0.55" transform="rotate(-8 30 68)"/>
-                        <ellipse cx="46" cy="68" rx="7" ry="10" fill="#c4889a" opacity="0.55" transform="rotate(8 46 68)"/>
+                        <ellipse cx="30" cy="65" rx="7" ry="10" fill="#c4889a" opacity="0.55"/>
+                        <ellipse cx="46" cy="65" rx="7" ry="10" fill="#c4889a" opacity="0.55"/>
                       </svg>
                     </div>
                     <div>
                       <div style={s.itemName}>{item.name}</div>
                       <div style={s.itemCat}>{item.category}</div>
-                      <div style={s.itemMeta}>{item.meta}</div>
+                      <div style={s.itemMeta}>{item.type === 'agarbatti' ? '30 sticks · Triangular prism' : '20 cones · Hexagonal box'}</div>
                     </div>
                   </div>
                   <div style={s.qtyControl}>
@@ -159,6 +161,7 @@ export default function CartPage() {
                   <button style={s.removeBtn} onClick={()=>remove(item.id)}>×</button>
                 </div>
               ))}
+
               <div style={{marginTop:'1.5rem',padding:'1.25rem',background:'#edeae0',borderRadius:4,border:'1px solid #ddd8cc'}}>
                 {shipping===0
                   ? <p style={{fontSize:'0.82rem',color:'#4a7055'}}>✓ You've unlocked <strong>free shipping!</strong></p>
@@ -179,7 +182,7 @@ export default function CartPage() {
               <div style={s.summaryRow}><span>Shipping</span><span style={{color:shipping===0?'#4a7055':'#2a2a1e'}}>{shipping===0?'FREE':`₹${shipping}`}</span></div>
               <div style={s.divider}/>
               <div style={s.summaryTotal}>
-                <span style={s.totalLabel}>Total</span>
+                <span style={{fontSize:'0.85rem',textTransform:'uppercase',letterSpacing:'1px'}}>Total</span>
                 <span style={s.totalAmt}>₹{total}</span>
               </div>
               <div style={s.couponRow}>
@@ -187,9 +190,11 @@ export default function CartPage() {
                 <button style={s.couponBtn} onClick={applyCoupon}>Apply</button>
               </div>
               {couponMsg && <div style={{fontSize:'0.75rem',color:couponMsg.type==='success'?'#4a7055':'#c9503a',marginBottom:'0.5rem'}}>{couponMsg.text}</div>}
-              <p style={{fontSize:'0.72rem',color:'#9a9a7a',marginBottom:'1rem'}}>Try: <span style={{color:'#4a7055',cursor:'pointer'}} onClick={()=>setCoupon('HAMPAR10')}>HAMPAR10</span> or <span style={{color:'#4a7055',cursor:'pointer'}} onClick={()=>setCoupon('SACRED')}>SACRED</span></p>
+              <p style={{fontSize:'0.72rem',color:'#9a9a7a',marginBottom:'1rem'}}>
+                Try: <span style={{color:'#4a7055',cursor:'pointer'}} onClick={()=>setCoupon('HAMPAR10')}>HAMPAR10</span> or <span style={{color:'#4a7055',cursor:'pointer'}} onClick={()=>setCoupon('SACRED')}>SACRED</span>
+              </p>
               <button style={s.checkoutBtn} onClick={()=>window.location.href='/checkout'}>Proceed to Checkout →</button>
-              <Link href="/" style={s.continuLink}>← Continue Shopping</Link>
+              <Link href="/" style={s.continueLink}>← Continue Shopping</Link>
               <p style={s.shipNote}>{shipping===0?'✓ Free shipping applied':`₹${299-subtotal} more for free shipping`}</p>
               <div style={s.trust}>
                 {[['🔒','Secure'],['↩','Returns'],['✓','Verified']].map(([icon,label])=>(
@@ -209,8 +214,8 @@ export default function CartPage() {
                   <svg width="28" height="38" viewBox="0 0 80 110" opacity="0.8">
                     <line x1="38" y1="5" x2="38" y2="90" stroke="#5c4a2a" strokeWidth="1.5" strokeDasharray="3,5" opacity="0.4"/>
                     <circle cx="38" cy="5" r="4" fill="#c9a84c"/>
-                    <ellipse cx="30" cy="65" rx="7" ry="10" fill="#c4889a" opacity="0.55" transform="rotate(-8 30 65)"/>
-                    <ellipse cx="46" cy="65" rx="7" ry="10" fill="#c4889a" opacity="0.55" transform="rotate(8 46 65)"/>
+                    <ellipse cx="30" cy="65" rx="7" ry="10" fill="#c4889a" opacity="0.55"/>
+                    <ellipse cx="46" cy="65" rx="7" ry="10" fill="#c4889a" opacity="0.55"/>
                   </svg>
                 </div>
                 <div style={{flex:1}}>
