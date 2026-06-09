@@ -6,34 +6,46 @@ const EMAILJS_SERVICE_ID = 'service_fymj002'
 const EMAILJS_TEMPLATE_ID = 'template_acekhg5'
 const EMAILJS_PUBLIC_KEY = 'AzO_585k8-HYqo0gv'
 
+function getCart() {
+  if (typeof window === 'undefined') return []
+  try { return JSON.parse(localStorage.getItem('hampar_cart') || '[]') }
+  catch { return [] }
+}
+
+function clearCart() {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem('hampar_cart')
+}
+
 export default function CheckoutPage() {
   const [step, setStep] = useState(1)
   const [payMethod, setPayMethod] = useState('upi')
   const [upiId, setUpiId] = useState('')
   const [upiError, setUpiError] = useState('')
   const [placing, setPlacing] = useState(false)
+  const [orderItems, setOrderItems] = useState([])
   const [form, setForm] = useState({
     name:'', phone:'', email:'', address:'', city:'', state:'Uttar Pradesh', pincode:'', landmark:''
   })
   const [errors, setErrors] = useState({})
   const [orderId] = useState('HSP-' + Math.random().toString(36).substr(2,8).toUpperCase())
 
-  const orderItems = [
-    { name:'Lavender Serenity', category:'Agarbatti', price:40, qty:2, bg:'#ede8d8' },
-    { name:'Sandalwood Sacred', category:'Dhupbatti', price:55, qty:1, bg:'#e4edd8' },
-  ]
-  const subtotal = orderItems.reduce((s,i) => s+i.price*i.qty, 0)
-  const shipping = subtotal >= 299 ? 0 : 49
-  const codFee = payMethod === 'cod' ? 20 : 0
-  const total = subtotal + shipping + codFee
+  useEffect(() => {
+    const items = getCart()
+    setOrderItems(items.length > 0 ? items : [])
+  }, [])
 
-  // Load EmailJS
   useEffect(() => {
     const script = document.createElement('script')
     script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js'
-    script.onload = () => window.emailjs.init(EMAILJS_PUBLIC_KEY)
+    script.onload = () => window.emailjs && window.emailjs.init(EMAILJS_PUBLIC_KEY)
     document.head.appendChild(script)
   }, [])
+
+  const subtotal = orderItems.reduce((s,i) => s + i.price * i.qty, 0)
+  const shipping = subtotal >= 299 ? 0 : 49
+  const codFee = payMethod === 'cod' ? 20 : 0
+  const total = subtotal + shipping + codFee
 
   const validate = () => {
     const e = {}
@@ -50,30 +62,27 @@ export default function CheckoutPage() {
   const handleNext = () => { if (validate()) setStep(2) }
 
   const sendEmail = async () => {
-    const itemsList = orderItems.map(i => `${i.name} x${i.qty} = ₹${i.price*i.qty}`).join('\n')
-    const templateParams = {
-      order_id: orderId,
-      customer_name: form.name,
-      customer_phone: form.phone,
-      customer_email: form.email,
-      customer_address: form.address,
-      customer_city: form.city,
-      customer_state: form.state,
-      customer_pincode: form.pincode,
-      order_items: itemsList,
-      subtotal: `₹${subtotal}`,
-      shipping: shipping === 0 ? 'FREE' : `₹${shipping}`,
-      total: `₹${total}`,
-      payment_method: payMethod === 'upi' ? `UPI (${upiId})` : payMethod === 'cod' ? 'Cash on Delivery' : 'Net Banking',
-      name: form.name,
-      email: form.email,
-    }
+    if (!window.emailjs) return
+    const itemsList = orderItems.map(i => `${i.name} x${i.qty} = ₹${i.price * i.qty}`).join('\n')
     try {
-      await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-      console.log('Order email sent!')
-    } catch (err) {
-      console.error('Email failed:', err)
-    }
+      await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        order_id: orderId,
+        customer_name: form.name,
+        customer_phone: form.phone,
+        customer_email: form.email,
+        customer_address: form.address,
+        customer_city: form.city,
+        customer_state: form.state,
+        customer_pincode: form.pincode,
+        order_items: itemsList,
+        subtotal: `₹${subtotal}`,
+        shipping: shipping === 0 ? 'FREE' : `₹${shipping}`,
+        total: `₹${total}`,
+        payment_method: payMethod === 'upi' ? `UPI (${upiId})` : payMethod === 'cod' ? 'Cash on Delivery' : 'Net Banking',
+        name: form.name,
+        email: form.email,
+      })
+    } catch (err) { console.error('Email error:', err) }
   }
 
   const handlePlaceOrder = async () => {
@@ -84,6 +93,7 @@ export default function CheckoutPage() {
     setUpiError('')
     setPlacing(true)
     await sendEmail()
+    clearCart()
     setTimeout(() => { setPlacing(false); setStep(3) }, 2000)
   }
 
@@ -94,9 +104,9 @@ export default function CheckoutPage() {
     logoSub: { fontSize:9, letterSpacing:'2.5px', textTransform:'uppercase', color:'#7a9a80', marginTop:2 },
     progress: { background:'#edeae0', borderBottom:'1px solid #ddd8cc', padding:'1rem 2rem' },
     progressInner: { display:'flex', alignItems:'center', maxWidth:600, margin:'0 auto' },
-    progDot: (active, done) => ({ width:28, height:28, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.75rem', fontWeight:600, background: done?'#4a7055':active?'#2a2a1e':'#ddd8cc', color: done||active?'#f4f1eb':'#9a9a7a', flexShrink:0 }),
-    progLabel: (active, done) => ({ fontSize:'0.75rem', letterSpacing:'1px', textTransform:'uppercase', color: active||done?'#2a2a1e':'#9a9a7a', marginLeft:8 }),
-    progLine: (done) => ({ flex:1, height:1, background: done?'#4a7055':'#ddd8cc', margin:'0 12px' }),
+    progDot: (a,d) => ({ width:28, height:28, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.75rem', fontWeight:600, background:d?'#4a7055':a?'#2a2a1e':'#ddd8cc', color:d||a?'#f4f1eb':'#9a9a7a', flexShrink:0 }),
+    progLabel: (a,d) => ({ fontSize:'0.75rem', letterSpacing:'1px', textTransform:'uppercase', color:a||d?'#2a2a1e':'#9a9a7a', marginLeft:8 }),
+    progLine: (d) => ({ flex:1, height:1, background:d?'#4a7055':'#ddd8cc', margin:'0 12px' }),
     layout: { display:'grid', gridTemplateColumns:'1fr 340px', gap:'2rem', maxWidth:1000, margin:'0 auto', padding:'2rem' },
     sectionTitle: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1.5rem', color:'#2a2a1e', marginBottom:'1.5rem', paddingBottom:'0.75rem', borderBottom:'1px solid #ddd8cc' },
     formGrid2: { display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem', marginBottom:'1rem' },
@@ -111,9 +121,7 @@ export default function CheckoutPage() {
     payName: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1rem', color:'#2a2a1e' },
     payNote: { fontSize:'0.75rem', color:'#7a9a80', marginTop:2 },
     upiInput: (err) => ({ width:'100%', padding:'11px 14px', background:'#f9f7f2', border:`1px solid ${err?'#e05a4a':'#ddd8cc'}`, borderRadius:2, fontSize:'0.85rem', fontFamily:"'DM Sans',sans-serif", outline:'none', color:'#2a2a1e', boxSizing:'border-box', marginTop:8 }),
-    upiApps: { display:'flex', gap:8, marginTop:10, flexWrap:'wrap' },
-    upiApp: { fontSize:'8px', letterSpacing:'1px', textTransform:'uppercase', padding:'5px 12px', border:'1px solid #ddd8cc', borderRadius:20, color:'#6a6a52', cursor:'pointer', background:'#f4f1eb' },
-    btnPrimary: (loading) => ({ width:'100%', background: loading?'#7a9a80':'#4a7055', color:'#f4f1eb', fontSize:'0.8rem', letterSpacing:'1.5px', textTransform:'uppercase', padding:14, border:'none', borderRadius:2, cursor: loading?'not-allowed':'pointer', fontFamily:"'DM Sans',sans-serif", marginBottom:8 }),
+    btnPrimary: (loading) => ({ width:'100%', background:loading?'#7a9a80':'#4a7055', color:'#f4f1eb', fontSize:'0.8rem', letterSpacing:'1.5px', textTransform:'uppercase', padding:14, border:'none', borderRadius:2, cursor:loading?'not-allowed':'pointer', fontFamily:"'DM Sans',sans-serif", marginBottom:8 }),
     btnBack: { width:'100%', background:'transparent', color:'#6a6a52', fontSize:'0.75rem', letterSpacing:'1px', textTransform:'uppercase', padding:10, border:'1px solid #ddd8cc', borderRadius:2, cursor:'pointer', fontFamily:"'DM Sans',sans-serif" },
     summary: { background:'#edeae0', border:'1px solid #ddd8cc', borderRadius:4, padding:'1.5rem', position:'sticky', top:80 },
     sumTitle: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1.2rem', marginBottom:'1.25rem', paddingBottom:'0.75rem', borderBottom:'1px solid #ddd8cc' },
@@ -127,15 +135,12 @@ export default function CheckoutPage() {
     sumTotal: { display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'0.75rem' },
     totalAmt: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1.5rem', fontWeight:500, color:'#4a7055' },
     successPage: { minHeight:'80vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'4rem 2rem', textAlign:'center' },
-    successIcon: { fontSize:56, marginBottom:'1.5rem' },
     successH1: { fontFamily:"'Cormorant Garamond',serif", fontSize:'2.5rem', fontWeight:400, color:'#2a2a1e', marginBottom:'0.75rem' },
     successP: { fontSize:'0.88rem', color:'#6a6a52', lineHeight:1.85, maxWidth:440, margin:'0 auto 2rem' },
     orderCard: { background:'#edeae0', border:'1px solid #ddd8cc', borderRadius:4, padding:'1.5rem 2rem', maxWidth:420, width:'100%', margin:'0 auto 2rem', textAlign:'left' },
     orderRow: { display:'flex', justifyContent:'space-between', fontSize:'0.82rem', padding:'6px 0', borderBottom:'1px solid #ddd8cc', color:'#6a6a52' },
     orderVal: { color:'#2a2a1e', fontWeight:500 },
     successBtns: { display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' },
-    successBtn: { background:'#4a7055', color:'#f4f1eb', fontSize:'0.75rem', letterSpacing:'1.5px', textTransform:'uppercase', padding:'12px 28px', border:'none', borderRadius:2, cursor:'pointer', textDecoration:'none' },
-    successBtnGhost: { background:'transparent', color:'#2a2a1e', fontSize:'0.75rem', letterSpacing:'1.5px', textTransform:'uppercase', padding:'12px 28px', border:'1px solid #2a2a1e', borderRadius:2, textDecoration:'none' },
     footer: { background:'#1e1e14', padding:'1.75rem 2rem', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'1rem', marginTop:'2rem' },
     footerLogo: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1rem', letterSpacing:3, color:'#7a9a80' },
     footerCopy: { fontSize:'0.72rem', color:'#3a3a24' },
@@ -153,28 +158,36 @@ export default function CheckoutPage() {
           <circle cx="48" cy="38" r="2.5" fill="#2a2a1e"/>
           <path d="M40 62 Q36 54 38 48 Q40 44 40 44 Q40 44 42 48 Q44 54 40 62Z" fill="#4a7055" opacity="0.8"/>
         </svg>
-        <div>
-          <div style={s.logoText}>HAMPAR</div>
-          <div style={s.logoSub}>Spirituals</div>
-        </div>
+        <div><div style={s.logoText}>HAMPAR</div><div style={s.logoSub}>Spirituals</div></div>
       </Link>
-      <div style={{fontSize:'0.78rem',color:'#7a9a80',letterSpacing:'1px'}}>🔒 Secure Checkout</div>
+      <div style={{fontSize:'0.78rem',color:'#7a9a80'}}>🔒 Secure Checkout</div>
       <Link href="/cart" style={{fontSize:'0.75rem',letterSpacing:'1px',textTransform:'uppercase',color:'#6a6a52',textDecoration:'none'}}>← Back to Cart</Link>
     </nav>
   )
 
-  // SUCCESS PAGE
+  // EMPTY CART
+  if (orderItems.length === 0 && step !== 3) return (
+    <div style={s.page}>
+      <NavBar/>
+      <div style={{textAlign:'center',padding:'6rem 2rem'}}>
+        <div style={{fontSize:48,marginBottom:'1rem'}}>🛍</div>
+        <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:'1.8rem',color:'#2a2a1e',marginBottom:'0.75rem'}}>Your cart is empty</h2>
+        <p style={{fontSize:'0.85rem',color:'#6a6a52',marginBottom:'1.5rem'}}>Add products before checking out.</p>
+        <Link href="/" style={{background:'#4a7055',color:'#f4f1eb',padding:'12px 28px',borderRadius:2,fontSize:'0.8rem',letterSpacing:'1.5px',textTransform:'uppercase',textDecoration:'none'}}>Shop Now</Link>
+      </div>
+    </div>
+  )
+
+  // SUCCESS
   if (step === 3) return (
     <div style={s.page}>
       <NavBar/>
       <div style={s.successPage}>
-        <div style={s.successIcon}>🙏</div>
+        <div style={{fontSize:56,marginBottom:'1.5rem'}}>🙏</div>
         <h1 style={s.successH1}>Order Placed Successfully!</h1>
-        <p style={s.successP}>
-          Thank you, <strong>{form.name}</strong>! Your order has been received and a confirmation email has been sent to <strong>{form.email}</strong>. We will dispatch within 2 business days from Jhansi.
-        </p>
+        <p style={s.successP}>Thank you, <strong>{form.name}</strong>! Confirmation sent to <strong>{form.email}</strong>. We dispatch within 2 business days from Jhansi.</p>
         <div style={s.orderCard}>
-          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:'1rem',marginBottom:'0.75rem',color:'#2a2a1e'}}>Order Details</div>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:'1rem',marginBottom:'0.75rem'}}>Order Details</div>
           {[
             ['Order ID', orderId],
             ['Items', `${orderItems.reduce((s,i)=>s+i.qty,0)} items`],
@@ -182,20 +195,17 @@ export default function CheckoutPage() {
             ['Payment', payMethod==='upi'?'UPI':payMethod==='cod'?'Cash on Delivery':'Net Banking'],
             ['Delivery', `${form.city}, ${form.state}`],
             ['Expected', '3–5 business days'],
-            ['Email Sent', '✓ Confirmation sent'],
+            ['Email', '✓ Confirmation sent'],
           ].map(([k,v]) => (
             <div key={k} style={s.orderRow}><span>{k}</span><span style={s.orderVal}>{v}</span></div>
           ))}
         </div>
         <div style={s.successBtns}>
-          <Link href="/" style={s.successBtn}>Continue Shopping</Link>
-          <Link href="/purity" style={s.successBtnGhost}>Learn About Purity</Link>
+          <Link href="/" style={{background:'#4a7055',color:'#f4f1eb',fontSize:'0.75rem',letterSpacing:'1.5px',textTransform:'uppercase',padding:'12px 28px',borderRadius:2,textDecoration:'none'}}>Continue Shopping</Link>
+          <Link href="/purity" style={{background:'transparent',color:'#2a2a1e',fontSize:'0.75rem',letterSpacing:'1.5px',textTransform:'uppercase',padding:'12px 28px',border:'1px solid #2a2a1e',borderRadius:2,textDecoration:'none'}}>Learn About Purity</Link>
         </div>
       </div>
-      <footer style={s.footer}>
-        <div style={s.footerLogo}>HAMPAR SPIRITUALS</div>
-        <div style={s.footerCopy}>© 2024 Hampar Spirituals · Jhansi, UP</div>
-      </footer>
+      <footer style={s.footer}><div style={s.footerLogo}>HAMPAR SPIRITUALS</div><div style={s.footerCopy}>© 2024 Hampar Spirituals</div></footer>
     </div>
   )
 
@@ -203,14 +213,13 @@ export default function CheckoutPage() {
     <div style={s.page}>
       <NavBar/>
 
-      {/* PROGRESS */}
       <div style={s.progress}>
         <div style={s.progressInner}>
           {[['1','Address'],['2','Payment'],['3','Confirm']].map(([n,l],i) => (
             <div key={n} style={{display:'flex',alignItems:'center',flex:i<2?1:'auto'}}>
-              <div style={s.progDot(step===i+1, step>i+1)}>{step>i+1?'✓':n}</div>
-              <span style={s.progLabel(step===i+1, step>i+1)}>{l}</span>
-              {i < 2 && <div style={s.progLine(step>i+1)}/>}
+              <div style={s.progDot(step===i+1,step>i+1)}>{step>i+1?'✓':n}</div>
+              <span style={s.progLabel(step===i+1,step>i+1)}>{l}</span>
+              {i<2 && <div style={s.progLine(step>i+1)}/>}
             </div>
           ))}
         </div>
@@ -218,8 +227,8 @@ export default function CheckoutPage() {
 
       <div style={s.layout}>
         <div>
-          {/* STEP 1 — ADDRESS */}
-          {step === 1 && <>
+          {/* STEP 1 */}
+          {step===1 && <>
             <div style={s.sectionTitle}>Delivery Address</div>
             <div style={s.formGrid2}>
               <div>
@@ -269,17 +278,16 @@ export default function CheckoutPage() {
             <Link href="/cart" style={{display:'block',textAlign:'center',textDecoration:'none',marginTop:8,fontSize:'0.75rem',letterSpacing:'1px',textTransform:'uppercase',color:'#6a6a52',padding:10,border:'1px solid #ddd8cc',borderRadius:2}}>← Back to Cart</Link>
           </>}
 
-          {/* STEP 2 — PAYMENT */}
-          {step === 2 && <>
+          {/* STEP 2 */}
+          {step===2 && <>
             <div style={s.sectionTitle}>Choose Payment Method</div>
-
             {[
-              {id:'upi', icon:'📱', name:'UPI Payment', note:'Google Pay, PhonePe, Paytm, BHIM UPI'},
-              {id:'cod', icon:'💵', name:'Cash on Delivery', note:'Pay when your order arrives — ₹20 COD fee'},
-              {id:'netbanking', icon:'🏦', name:'Net Banking', note:'All major Indian banks supported'},
-            ].map(m => (
+              {id:'upi',icon:'📱',name:'UPI Payment',note:'Google Pay, PhonePe, Paytm, BHIM UPI'},
+              {id:'cod',icon:'💵',name:'Cash on Delivery',note:'Pay when your order arrives — ₹20 COD fee'},
+              {id:'netbanking',icon:'🏦',name:'Net Banking',note:'All major Indian banks supported'},
+            ].map(m=>(
               <div key={m.id} style={s.payCard(payMethod===m.id)} onClick={()=>setPayMethod(m.id)}>
-                <div style={s.payRadio(payMethod===m.id)}>{payMethod===m.id && <div style={s.payDot}/>}</div>
+                <div style={s.payRadio(payMethod===m.id)}>{payMethod===m.id&&<div style={s.payDot}/>}</div>
                 <span style={{fontSize:22}}>{m.icon}</span>
                 <div><div style={s.payName}>{m.name}</div><div style={s.payNote}>{m.note}</div></div>
               </div>
@@ -290,20 +298,16 @@ export default function CheckoutPage() {
                 <label style={s.label}>Your UPI ID</label>
                 <input style={s.upiInput(upiError)} placeholder="yourname@upi" value={upiId} onChange={e=>setUpiId(e.target.value)}/>
                 {upiError && <div style={s.errMsg}>{upiError}</div>}
-                <div style={s.upiApps}>
-                  {['GPay','PhonePe','Paytm','BHIM'].map(app=><div key={app} style={s.upiApp}>{app}</div>)}
+                <div style={{display:'flex',gap:8,marginTop:10,flexWrap:'wrap'}}>
+                  {['GPay','PhonePe','Paytm','BHIM'].map(app=><div key={app} style={{fontSize:'8px',letterSpacing:'1px',textTransform:'uppercase',padding:'5px 12px',border:'1px solid #ddd8cc',borderRadius:20,color:'#6a6a52',cursor:'pointer',background:'#f4f1eb'}}>{app}</div>)}
                 </div>
               </div>
             )}
-
             {payMethod==='cod' && (
               <div style={{marginBottom:'1.5rem',padding:'1.25rem',background:'#fff9ec',borderRadius:4,border:'1px solid #e8d8a0'}}>
-                <div style={{fontSize:'0.82rem',color:'#6a5a2a',lineHeight:1.8}}>
-                  💡 <strong>COD Note:</strong> An additional ₹20 fee applies. Please keep exact change ready.
-                </div>
+                <div style={{fontSize:'0.82rem',color:'#6a5a2a',lineHeight:1.8}}>💡 <strong>COD Note:</strong> An additional ₹20 fee applies. Please keep exact change ready.</div>
               </div>
             )}
-
             {payMethod==='netbanking' && (
               <div style={{marginBottom:'1.5rem',padding:'1.25rem',background:'#edeae0',borderRadius:4,border:'1px solid #ddd8cc'}}>
                 <label style={s.label}>Select Your Bank</label>
@@ -321,7 +325,7 @@ export default function CheckoutPage() {
             </div>
 
             <button style={s.btnPrimary(placing)} onClick={handlePlaceOrder} disabled={placing}>
-              {placing ? '⏳ Placing Order & Sending Email...' : `Place Order — ₹${total} →`}
+              {placing?'⏳ Placing Order...':`Place Order — ₹${total} →`}
             </button>
             <button style={s.btnBack} onClick={()=>setStep(1)}>← Back to Address</button>
           </>}
@@ -329,10 +333,10 @@ export default function CheckoutPage() {
 
         {/* ORDER SUMMARY */}
         <div style={s.summary}>
-          <div style={s.sumTitle}>Order Summary</div>
-          {orderItems.map((item,i) => (
+          <div style={s.sumTitle}>Order Summary ({orderItems.reduce((s,i)=>s+i.qty,0)} items)</div>
+          {orderItems.map((item,i)=>(
             <div key={i} style={s.sumItem}>
-              <div style={{...s.sumThumb,background:item.bg}}>
+              <div style={{...s.sumThumb,background:item.bg||'#ede8d8'}}>
                 <svg width="28" height="38" viewBox="0 0 80 110" opacity="0.8">
                   <line x1="38" y1="5" x2="38" y2="90" stroke="#5c4a2a" strokeWidth="1.5" strokeDasharray="3,5" opacity="0.4"/>
                   <circle cx="38" cy="5" r="4" fill="#c9a84c"/>
@@ -350,25 +354,20 @@ export default function CheckoutPage() {
           <div style={s.sumDiv}/>
           <div style={s.sumRow}><span>Subtotal</span><span>₹{subtotal}</span></div>
           <div style={s.sumRow}><span>Shipping</span><span style={{color:shipping===0?'#4a7055':'#2a2a1e'}}>{shipping===0?'FREE':`₹${shipping}`}</span></div>
-          {payMethod==='cod' && <div style={s.sumRow}><span>COD Fee</span><span>₹20</span></div>}
+          {payMethod==='cod'&&<div style={s.sumRow}><span>COD Fee</span><span>₹20</span></div>}
           <div style={s.sumDiv}/>
           <div style={s.sumTotal}>
             <span style={{fontSize:'0.85rem',textTransform:'uppercase',letterSpacing:'1px'}}>Total</span>
             <span style={s.totalAmt}>₹{total}</span>
           </div>
-          <div style={{marginTop:'1.25rem',padding:'0.75rem',background:'rgba(74,112,85,0.06)',borderRadius:3,border:'1px solid rgba(74,112,85,0.15)'}}>
-            <div style={{fontSize:'9px',letterSpacing:'2px',textTransform:'uppercase',color:'#4a7055',marginBottom:6}}>Your Order Is</div>
-            {['100% Natural & Charcoal-Free','QR Purity Verified','Handcrafted in Jhansi','📧 Email confirmation on order'].map(t=>(
+          <div style={{marginTop:'1rem',padding:'0.75rem',background:'rgba(74,112,85,0.06)',borderRadius:3,border:'1px solid rgba(74,112,85,0.15)'}}>
+            {['100% Natural & Charcoal-Free','QR Purity Verified','Handcrafted in Jhansi','📧 Email confirmation sent'].map(t=>(
               <div key={t} style={{fontSize:'0.74rem',color:'#4a3d2c',padding:'2px 0',display:'flex',gap:6}}><span style={{color:'#4a7055'}}>✓</span>{t}</div>
             ))}
           </div>
         </div>
       </div>
-
-      <footer style={s.footer}>
-        <div style={s.footerLogo}>HAMPAR SPIRITUALS</div>
-        <div style={s.footerCopy}>🔒 Secure · © 2024 Hampar Spirituals</div>
-      </footer>
+      <footer style={s.footer}><div style={s.footerLogo}>HAMPAR SPIRITUALS</div><div style={s.footerCopy}>🔒 © 2024 Hampar Spirituals</div></footer>
     </div>
   )
 }
