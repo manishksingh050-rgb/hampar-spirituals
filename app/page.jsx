@@ -153,8 +153,10 @@ export default function Home() {
 
       <MobileNav activePage="" />
 
-      <section style={s.hero}>
-        <div style={s.heroLeft}>
+      <section style={{position:'relative', minHeight:520, display:'flex', alignItems:'center', overflow:'hidden'}}>
+        <div style={{position:'absolute', inset:0, backgroundImage:"url('/images/hero-bg.png')", backgroundSize:'cover', backgroundPosition:'center', backgroundRepeat:'no-repeat'}}/>
+        <div style={{position:'absolute', inset:0, background:'linear-gradient(to right, rgba(244,241,235,0.97) 0%, rgba(244,241,235,0.90) 40%, rgba(244,241,235,0.3) 70%, rgba(244,241,235,0) 100%)'}}/>
+        <div style={{position:'relative', zIndex:1, padding:'4rem 2.5rem', maxWidth:520}}>
           <div style={s.eyebrow}><span style={{width:24,height:1,background:'#7a9a80',display:'inline-block'}}></span>Temple-grade · Jhansi, India</div>
           <h1 style={s.h1}>Sacred fragrance,<br/><em style={{color:'#4a7055',fontStyle:'italic'}}>purely crafted</em><br/>for your ritual</h1>
           <p style={s.heroDesc}>HAMPAR Spirituals brings you charcoal-free agarbatti and dhupbatti — hand-crafted from the finest botanicals.</p>
@@ -163,7 +165,7 @@ export default function Home() {
             <button style={s.btnGhost} onClick={()=>window.location.href='/story'}>Our Story ↗</button>
           </div>
         </div>
-        <div style={s.heroRight}>
+        <div style={{display:'none'}}>
           <svg width="100%" height="480" viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg">
             <rect width="400" height="480" fill="#e2ddd0"/>
             <g transform="translate(50,210)">
