@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useProducts } from '../components/useProducts'
 import { cartStore } from '../components/cartStore'
+import MobileNav from '../components/MobileNav'
 
 export default function Home() {
   const { products, loading, source } = useProducts()
@@ -150,29 +151,7 @@ export default function Home() {
     <div style={s.page}>
       <style>{`@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
 
-      <nav style={s.nav}>
-        <div style={s.logoWrap}>
-          <svg width="36" height="36" viewBox="0 0 80 80" fill="none">
-            <rect x="18" y="38" width="44" height="28" rx="4" stroke="#2a2a1e" strokeWidth="2.5" fill="none"/>
-            <path d="M26 38 Q28 24 40 22 Q52 24 54 38" stroke="#2a2a1e" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-            <rect x="30" y="16" width="8" height="22" rx="4" stroke="#2a2a1e" strokeWidth="2" fill="none"/>
-            <rect x="42" y="16" width="8" height="22" rx="4" stroke="#2a2a1e" strokeWidth="2" fill="none"/>
-            <circle cx="32" cy="38" r="2.5" fill="#2a2a1e"/>
-            <circle cx="48" cy="38" r="2.5" fill="#2a2a1e"/>
-            <path d="M40 62 Q36 54 38 48 Q40 44 40 44 Q40 44 42 48 Q44 54 40 62Z" fill="#4a7055" opacity="0.8"/>
-          </svg>
-          <div><div style={s.logoText}>HAMPAR</div><div style={s.logoSub}>Spirituals</div></div>
-        </div>
-        <ul style={s.navLinks}>
-          <li><a href="#shop" style={s.navLink}>Shop</a></li>
-          <li><a href="/story" style={s.navLink}>Our Story</a></li>
-          <li><a href="/purity" style={s.navLink}>Purity</a></li>
-          <li><a href="/charity" style={s.navLink}>Charity</a></li>
-        </ul>
-        <button style={s.cartBtn} onClick={()=>window.location.href='/cart'}>
-          🛍 Cart <span style={s.badge}>{cartCount}</span>
-        </button>
-      </nav>
+      <MobileNav activePage="" />
 
       <section style={s.hero}>
         <div style={s.heroLeft}>

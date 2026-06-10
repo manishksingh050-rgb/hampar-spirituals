@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
+import MobileNav from '../../components/MobileNav'
 
 export default function PurityPage() {
   const [activeTab, setActiveTab] = useState(0)
@@ -120,29 +121,7 @@ export default function PurityPage() {
   return (
     <div style={s.page}>
       {/* NAV */}
-      <nav style={s.nav}>
-        <Link href="/" style={{display:'flex',alignItems:'center',gap:10,textDecoration:'none'}}>
-          <svg width="34" height="34" viewBox="0 0 80 80" fill="none">
-            <rect x="18" y="38" width="44" height="28" rx="4" stroke="#2a2a1e" strokeWidth="2.5" fill="none"/>
-            <path d="M26 38 Q28 24 40 22 Q52 24 54 38" stroke="#2a2a1e" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-            <rect x="30" y="16" width="8" height="22" rx="4" stroke="#2a2a1e" strokeWidth="2" fill="none"/>
-            <rect x="42" y="16" width="8" height="22" rx="4" stroke="#2a2a1e" strokeWidth="2" fill="none"/>
-            <circle cx="32" cy="38" r="2.5" fill="#2a2a1e"/>
-            <circle cx="48" cy="38" r="2.5" fill="#2a2a1e"/>
-            <path d="M40 62 Q36 54 38 48 Q40 44 40 44 Q40 44 42 48 Q44 54 40 62Z" fill="#4a7055" opacity="0.8"/>
-          </svg>
-          <div>
-            <div style={s.logoText}>HAMPAR</div>
-            <div style={s.logoSub}>Spirituals</div>
-          </div>
-        </Link>
-        <ul style={{display:'flex',gap:'1.5rem',listStyle:'none',margin:0,padding:0}}>
-          {[['Shop','/'],['Our Story','/story'],['Purity','/purity'],['charity','/']].map(([l,h]) => (
-            <li key={l}><Link href={h} style={s.navLink(l==='Purity')}>{l}</Link></li>
-          ))}
-        </ul>
-        <Link href="/cart" style={s.cartBtn}>🛍 Cart</Link>
-      </nav>
+      <MobileNav activePage="Purity" />
 
       {/* HERO */}
       <section style={s.hero}>
