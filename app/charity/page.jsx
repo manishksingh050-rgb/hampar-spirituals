@@ -271,31 +271,22 @@ export default function CharityPage() {
           <p style={s.p}>No middlemen. No vague "CSR reports." Real children, real help, real impact — verified and documented by our team on the ground in Jhansi.</p>
           <div style={s.highlight}>"When you light a HAMPAR agarbatti, you are not just purifying your space — you are lighting a lamp of hope for a child somewhere in our city."<br/><span style={{fontSize:'0.78rem',color:'#7a9a80',fontStyle:'normal',marginTop:4,display:'block'}}>— Manish, Founder</span></div>
         </div>
-        <div style={s.missionVisual}>
-          <svg width="100%" height="400" viewBox="0 0 320 400" xmlns="http://www.w3.org/2000/svg">
-            <rect width="320" height="400" fill="#ddd8c8"/>
-            <circle cx="160" cy="160" r="110" fill="none" stroke="#c9a84c" strokeWidth="0.5" opacity="0.3"/>
-            <circle cx="160" cy="160" r="80" fill="none" stroke="#4a7055" strokeWidth="0.5" opacity="0.25"/>
-            <circle cx="160" cy="160" r="50" fill="rgba(74,112,85,0.08)" stroke="#4a7055" strokeWidth="1"/>
-            <text x="160" y="150" textAnchor="middle" fontFamily="'Cormorant Garamond',serif" fontSize="13" fill="#2a2a1e" letterSpacing="2">HAMPAR</text>
-            <text x="160" y="168" textAnchor="middle" fontFamily="'DM Sans',sans-serif" fontSize="7" fill="#4a7055" letterSpacing="2">GIVES BACK</text>
-            <g transform="translate(80,240)">
-              <circle cx="0" cy="0" r="28" fill="#fff9ec" stroke="#c9a84c" strokeWidth="1"/>
-              <text x="0" y="5" textAnchor="middle" fontSize="18">🍱</text>
-            </g>
-            <g transform="translate(160,270)">
-              <circle cx="0" cy="0" r="28" fill="#f0f5f0" stroke="#4a7055" strokeWidth="1"/>
-              <text x="0" y="5" textAnchor="middle" fontSize="18">📚</text>
-            </g>
-            <g transform="translate(240,240)">
-              <circle cx="0" cy="0" r="28" fill="#f0f2ff" stroke="#6a7aaa" strokeWidth="1"/>
-              <text x="0" y="5" textAnchor="middle" fontSize="18">🏥</text>
-            </g>
-            <line x1="80" y1="240" x2="130" y2="170" stroke="#c9a84c" strokeWidth="0.7" opacity="0.4" strokeDasharray="3,4"/>
-            <line x1="160" y1="242" x2="160" y2="182" stroke="#4a7055" strokeWidth="0.7" opacity="0.4" strokeDasharray="3,4"/>
-            <line x1="240" y1="240" x2="190" y2="170" stroke="#6a7aaa" strokeWidth="0.7" opacity="0.4" strokeDasharray="3,4"/>
-            <text x="160" y="360" textAnchor="middle" fontFamily="'Cormorant Garamond',serif" fontSize="10" fill="#7a9a80" letterSpacing="2" fontStyle="italic">Jhansi · उत्तर प्रदेश</text>
-          </svg>
+        <div style={{background:'#e8e4d8', overflow:'hidden', display:'grid', gridTemplateColumns:'1fr 1fr', gridTemplateRows:'1fr 1fr', gap:3, minHeight:400}}>
+          {[
+            { emoji:'🍱', label:'Feeding Children', color:'#c9a84c', bg:'#fff9ec' },
+            { emoji:'📚', label:'Education Drive', color:'#4a7055', bg:'#f0f5f0' },
+            { emoji:'🏥', label:'Medical Camp', color:'#6a7aaa', bg:'#f0f2ff' },
+            { emoji:'👘', label:'Clothes Drive', color:'#993C1D', bg:'#fff4f0' },
+          ].map((item, i) => (
+            <div key={i} style={{background:item.bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, padding:'1.5rem', cursor:'pointer', transition:'transform 0.2s'}}
+              onMouseEnter={e => e.currentTarget.style.transform='scale(1.02)'}
+              onMouseLeave={e => e.currentTarget.style.transform='scale(1)'}
+            >
+              <span style={{fontSize:36}}>{item.emoji}</span>
+              <div style={{fontSize:'9px', letterSpacing:'2px', textTransform:'uppercase', color:item.color, textAlign:'center'}}>{item.label}</div>
+              <div style={{fontSize:'0.72rem', color:'#7a9a80', textAlign:'center', lineHeight:1.5}}>Add your photo here</div>
+            </div>
+          ))}
         </div>
       </section>
 
