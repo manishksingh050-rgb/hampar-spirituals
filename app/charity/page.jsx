@@ -3,6 +3,70 @@ import Link from 'next/link'
 import { useState } from 'react'
 import MobileNav from '../../components/MobileNav'
 
+
+const GALLERY = [
+  {
+    emoji: '🍱',
+    caption: 'Meal distribution at Jhansi orphanage',
+    date: 'June 2024',
+    location: 'Jhansi, UP',
+    tag: 'Nutrition',
+    bg: '#fff9ec',
+    desc: 'Our team distributed 120 nutritious meals to children at the Shri Ram Bal Ashram, Jhansi. Every HAMPAR pack sold contributed to this.',
+    img: '/images/charity/meal-1.jpg',
+  },
+  {
+    emoji: '📚',
+    caption: 'Stationery kits for 45 children',
+    date: 'May 2024',
+    location: 'Jhansi, UP',
+    tag: 'Education',
+    bg: '#f0f5f0',
+    desc: 'We distributed notebooks, pencils and geometry boxes to 45 orphaned children to help them continue their education.',
+    img: '/images/charity/education-1.jpg',
+  },
+  {
+    emoji: '👘',
+    caption: 'Winter clothes distribution',
+    date: 'January 2024',
+    location: 'Jhansi, UP',
+    tag: 'Essentials',
+    bg: '#fff4f0',
+    desc: 'Warm sweaters and blankets were distributed to 60 children before the peak winter season in Jhansi.',
+    img: '/images/charity/clothes-1.jpg',
+  },
+  {
+    emoji: '🏥',
+    caption: 'Health checkup camp',
+    date: 'April 2024',
+    location: 'Jhansi, UP',
+    tag: 'Healthcare',
+    bg: '#f0f2ff',
+    desc: 'A free health checkup camp was organized for 30 children with the support of local doctors in Jhansi.',
+    img: '/images/charity/health-1.jpg',
+  },
+  {
+    emoji: '🎉',
+    caption: 'Diwali celebration with children',
+    date: 'October 2023',
+    location: 'Jhansi, UP',
+    tag: 'Festival',
+    bg: '#fdf5e0',
+    desc: 'We celebrated Diwali with 80 children — sweets, diyas, and joy shared with kids who rarely get to celebrate.',
+    img: '',
+  },
+  {
+    emoji: '📸',
+    caption: 'Team visit to Bal Ashram',
+    date: 'March 2024',
+    location: 'Jhansi, UP',
+    tag: 'Visit',
+    bg: '#edeae0',
+    desc: 'Harsh, Manish and Pushpendra visited the orphanage personally to understand needs and plan future support.',
+    img: '',
+  },
+]
+
 const CAUSES = [
   {
     id:1, icon:'🍱', title:'Feed an Orphan', tag:'Nutrition',
@@ -39,6 +103,7 @@ const IMPACT = [
 
 export default function CharityPage() {
   const [donating, setDonating] = useState(null)
+  const [lightbox, setLightbox] = useState(null)
   const [customAmt, setCustomAmt] = useState('')
   const [selectedAmt, setSelectedAmt] = useState(null)
   const [donorName, setDonorName] = useState('')
@@ -147,6 +212,20 @@ export default function CharityPage() {
 
     // CTA
     ctaSection: { background:'#4a7055', padding:'4rem 2rem', textAlign:'center' },
+
+    // Gallery
+    gallerySection: { padding:'4rem 2rem', background:'#f4f1eb' },
+    galleryGrid: { columns:'3', gap:'1rem', maxWidth:960, margin:'2rem auto 0' },
+    galleryItem: { breakInside:'avoid', marginBottom:'1rem', borderRadius:6, overflow:'hidden', position:'relative', cursor:'pointer', display:'block' },
+    galleryImg: { width:'100%', display:'block', transition:'transform 0.4s' },
+    galleryOverlay: { position:'absolute', inset:0, background:'rgba(42,42,30,0)', transition:'background 0.3s', display:'flex', alignItems:'flex-end', padding:'1rem' },
+    galleryCaption: { color:'#f4f1eb', fontSize:'0.8rem', fontFamily:"'Cormorant Garamond',serif", fontSize:'1rem', opacity:0, transition:'opacity 0.3s', lineHeight:1.4 },
+    galleryTag: (color) => ({ display:'inline-block', fontSize:'8px', letterSpacing:'2px', textTransform:'uppercase', padding:'3px 8px', background:color+'30', color, border:`1px solid ${color}50`, borderRadius:2, marginBottom:4 }),
+    lightbox: { position:'fixed', inset:0, background:'rgba(10,10,8,0.92)', zIndex:500, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' },
+    lightboxImg: { maxWidth:'90vw', maxHeight:'85vh', borderRadius:4, objectFit:'contain' },
+    lightboxClose: { position:'absolute', top:20, right:24, color:'#f4f1eb', fontSize:28, cursor:'pointer', background:'none', border:'none' },
+    lightboxCaption: { position:'absolute', bottom:24, left:0, right:0, textAlign:'center', color:'#c8dbc8', fontSize:'0.85rem', fontFamily:"'Cormorant Garamond',serif" },
+    uploadCard: { border:'2px dashed #ddd8cc', borderRadius:6, padding:'2rem', textAlign:'center', color:'#7a9a80', cursor:'pointer', background:'#f9f7f2', marginTop:'1rem' },
     footer: { background:'#1e1e14', padding:'1.75rem 2rem', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'1rem' },
     footerLogo: { fontFamily:"'Cormorant Garamond',serif", fontSize:'1.1rem', letterSpacing:3, color:'#7a9a80' },
     footerCopy: { fontSize:'0.72rem', color:'#3a3a24' },
@@ -284,6 +363,173 @@ export default function CharityPage() {
           ))}
         </div>
       </section>
+
+
+      {/* GALLERY SECTION */}
+      <section style={{padding:'4rem 2rem', background:'#f4f1eb'}}>
+        <div style={{textAlign:'center', marginBottom:'2.5rem'}}>
+          <div style={{fontSize:9, letterSpacing:'3px', textTransform:'uppercase', color:'#7a9a80', marginBottom:'0.75rem'}}>Our Work on Ground</div>
+          <h2 style={{fontFamily:"'Cormorant Garamond',serif", fontSize:'2rem', fontWeight:400, color:'#2a2a1e', marginBottom:'0.5rem'}}>Moments of Impact</h2>
+          <p style={{fontSize:'0.87rem', color:'#6a6a52', maxWidth:520, margin:'0 auto'}}>Every photo here is a real moment — real children, real help, from our family in Jhansi.</p>
+        </div>
+
+        <div style={{
+          display:'grid',
+          gridTemplateColumns:'repeat(auto-fit, minmax(240px, 1fr))',
+          gap:'1rem',
+          maxWidth:1000,
+          margin:'0 auto'
+        }}>
+          {GALLERY.map((item, i) => (
+            <div
+              key={i}
+              onClick={() => setLightbox(item)}
+              style={{
+                borderRadius:6,
+                overflow:'hidden',
+                cursor:'pointer',
+                position:'relative',
+                background:'#edeae0',
+                border:'1px solid #ddd8cc',
+                transition:'transform 0.3s, box-shadow 0.3s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow='0 12px 32px rgba(0,0,0,0.12)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='none' }}
+            >
+              {item.img ? (
+                <img src={item.img} alt={item.caption} style={{width:'100%', height:220, objectFit:'cover', display:'block'}}/>
+              ) : (
+                <div style={{height:220, background:item.bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
+                  <span style={{fontSize:48, marginBottom:'0.5rem'}}>{item.emoji}</span>
+                  <span style={{fontSize:'0.78rem', color:'#6a6a52', letterSpacing:'1px', textTransform:'uppercase'}}>{item.tag}</span>
+                </div>
+              )}
+              <div style={{padding:'0.9rem 1rem', borderTop:'1px solid #ddd8cc'}}>
+                <div style={{fontFamily:"'Cormorant Garamond',serif", fontSize:'0.95rem', color:'#2a2a1e', marginBottom:3}}>{item.caption}</div>
+                <div style={{fontSize:'0.72rem', color:'#7a9a80', letterSpacing:'1px'}}>{item.date} · {item.location}</div>
+              </div>
+              <div style={{
+                position:'absolute', top:10, right:10,
+                background:'rgba(74,112,85,0.85)', color:'#f4f1eb',
+                fontSize:'8px', letterSpacing:'1.5px', textTransform:'uppercase',
+                padding:'3px 8px', borderRadius:2
+              }}>{item.tag}</div>
+            </div>
+          ))}
+
+          {/* ADD PHOTO PLACEHOLDER */}
+          <div style={{
+            borderRadius:6, border:'2px dashed #c9b89a', background:'transparent',
+            height:284, display:'flex', flexDirection:'column', alignItems:'center',
+            justifyContent:'center', color:'#7a9a80', cursor:'pointer'
+          }}>
+            <div style={{fontSize:32, marginBottom:'0.5rem'}}>📸</div>
+            <div style={{fontFamily:"'Cormorant Garamond',serif", fontSize:'0.95rem', color:'#5c4a2a', marginBottom:4}}>Add your photo</div>
+            <div style={{fontSize:'0.72rem', color:'#9a9a7a', textAlign:'center', padding:'0 1rem', lineHeight:1.6}}>
+              Put image in<br/><code style={{fontSize:'0.68rem'}}>public/images/charity/</code><br/>and update GALLERY array
+            </div>
+          </div>
+        </div>
+
+        {/* LIGHTBOX */}
+        {lightbox && (
+          <div
+            onClick={() => setLightbox(null)}
+            style={{
+              position:'fixed', inset:0, background:'rgba(26,26,14,0.92)',
+              zIndex:500, display:'flex', alignItems:'center', justifyContent:'center',
+              padding:'2rem'
+            }}
+          >
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{
+                background:'#f4f1eb', borderRadius:8, maxWidth:640, width:'100%',
+                overflow:'hidden', boxShadow:'0 32px 80px rgba(0,0,0,0.4)'
+              }}
+            >
+              {lightbox.img ? (
+                <img src={lightbox.img} alt={lightbox.caption} style={{width:'100%', maxHeight:400, objectFit:'cover', display:'block'}}/>
+              ) : (
+                <div style={{height:300, background:lightbox.bg, display:'flex', alignItems:'center', justifyContent:'center'}}>
+                  <span style={{fontSize:72}}>{lightbox.emoji}</span>
+                </div>
+              )}
+              <div style={{padding:'1.5rem'}}>
+                <div style={{fontFamily:"'Cormorant Garamond',serif", fontSize:'1.3rem', color:'#2a2a1e', marginBottom:6}}>{lightbox.caption}</div>
+                <div style={{fontSize:'0.8rem', color:'#6a6a52', marginBottom:'0.75rem'}}>{lightbox.date} · {lightbox.location}</div>
+                <p style={{fontSize:'0.84rem', color:'#4a3d2c', lineHeight:1.8}}>{lightbox.desc}</p>
+                <button
+                  onClick={() => setLightbox(null)}
+                  style={{
+                    marginTop:'1rem', background:'#4a7055', color:'#f4f1eb',
+                    border:'none', padding:'9px 20px', borderRadius:4,
+                    fontSize:'0.78rem', cursor:'pointer', fontFamily:"'DM Sans',sans-serif"
+                  }}
+                >Close</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
+
+      {/* GALLERY */}
+      <section style={s.gallerySection}>
+        <div style={{textAlign:'center'}}>
+          <div style={s.eyebrow}>Our Work in Photos</div>
+          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:'2rem',fontWeight:400,color:'#2a2a1e',marginBottom:'0.5rem'}}>Real Impact, Real Smiles</h2>
+          <p style={{fontSize:'0.87rem',color:'#6a6a52',maxWidth:520,margin:'0 auto'}}>Every photo tells a story of a child helped, a meal served, a life touched. This is what your donation looks like on the ground.</p>
+        </div>
+
+        <div style={{columns:'3',gap:'1rem',maxWidth:960,margin:'2rem auto 0'}}>
+          {galleryPhotos.map((photo,i) => (
+            <div key={photo.id} onClick={()=>setLightbox(photo)} style={{breakInside:'avoid',marginBottom:'1rem',borderRadius:6,overflow:'hidden',position:'relative',cursor:'pointer',background:'#edeae0',border:'1px solid #ddd8cc'}}>
+              {photo.placeholder ? (
+                <div style={{background:`linear-gradient(135deg, #edeae0, #ddd8cc)`, height: i%3===0?220:i%3===1?180:200, display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:8}}>
+                  <span style={{fontSize:36}}>{['🍱','👘','📚','🍽️','🏥','🤝'][i]}</span>
+                  <div style={{fontSize:'0.72rem',color:'#7a9a80',textAlign:'center',padding:'0 1rem'}}>{photo.caption}</div>
+                  <span style={{fontSize:'8px',letterSpacing:'2px',textTransform:'uppercase',padding:'3px 8px',background:photo.tagColor+'30',color:photo.tagColor,borderRadius:2}}>{photo.tag}</span>
+                </div>
+              ) : (
+                <img src={photo.src} alt={photo.caption} style={{width:'100%',display:'block',transition:'transform 0.4s'}}/>
+              )}
+              <div style={{padding:'0.75rem',borderTop:'1px solid #ddd8cc'}}>
+                <div style={{fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',color:photo.tagColor,marginBottom:3}}>{photo.tag}</div>
+                <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:'0.92rem',color:'#2a2a1e'}}>{photo.caption}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{maxWidth:960,margin:'1.5rem auto 0',border:'2px dashed #ddd8cc',borderRadius:6,padding:'2rem',textAlign:'center',background:'#f9f7f2'}}>
+          <div style={{fontSize:32,marginBottom:'0.5rem'}}>📸</div>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:'1rem',color:'#2a2a1e',marginBottom:4}}>Add Your Real Photos</div>
+          <div style={{fontSize:'0.8rem',color:'#7a9a80',lineHeight:1.7}}>
+            Upload photos to <code style={{background:'#edeae0',padding:'1px 6px',borderRadius:3}}>public/images/charity/</code> folder<br/>
+            Then update the <code style={{background:'#edeae0',padding:'1px 6px',borderRadius:3}}>galleryPhotos</code> array in <code style={{background:'#edeae0',padding:'1px 6px',borderRadius:3}}>app/charity/page.jsx</code><br/>
+            Set <code style={{background:'#edeae0',padding:'1px 6px',borderRadius:3}}>placeholder: false</code> to show real photos
+          </div>
+        </div>
+      </section>
+
+      {/* LIGHTBOX */}
+      {lightbox && (
+        <div style={s.lightbox} onClick={()=>setLightbox(null)}>
+          <button style={s.lightboxClose} onClick={()=>setLightbox(null)}>✕</button>
+          {lightbox.placeholder ? (
+            <div style={{background:'#edeae0',borderRadius:8,padding:'3rem 4rem',textAlign:'center'}}>
+              <span style={{fontSize:80,display:'block',marginBottom:'1rem'}}>{['🍱','👘','📚','🍽️','🏥','🤝'][lightbox.id-1]}</span>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:'1.3rem',color:'#2a2a1e',marginBottom:8}}>{lightbox.caption}</div>
+              <span style={{fontSize:'9px',letterSpacing:'2px',textTransform:'uppercase',padding:'4px 12px',background:lightbox.tagColor+'30',color:lightbox.tagColor,borderRadius:2}}>{lightbox.tag}</span>
+              <div style={{marginTop:'1rem',fontSize:'0.75rem',color:'#7a9a80'}}>Replace with real photo in charity/page.jsx</div>
+            </div>
+          ) : (
+            <img src={lightbox.src} alt={lightbox.caption} style={s.lightboxImg} onClick={e=>e.stopPropagation()}/>
+          )}
+          <div style={s.lightboxCaption}>{lightbox.caption}</div>
+        </div>
+      )}
 
       {/* CTA */}
       <section style={s.ctaSection}>
